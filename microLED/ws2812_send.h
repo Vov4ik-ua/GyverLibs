@@ -10,7 +10,9 @@
 #elif F_CPU == 12000000
 #define _DELAY_   
 #elif F_CPU == 16000000
-#define _DELAY_ NOP2             
+#define _DELAY_ NOP2        
+#elif F_CPU == 16500000    //Digispark
+#define _DELAY_ NOP2              
 #elif F_CPU == 20000000 
 #define _DELAY_ NOP2 NOP2 NOP1
 #endif
@@ -87,7 +89,7 @@ void WS2812B_sendData (PTR_TYPE data, int16_t datlen, uint8_t maskhi, uint8_t *p
 			// [clocks] - (action)
 			"ldi   %[counter] ,8  \n\t"     // закинуть 8 в счетчик циклов 
 			
-			"loop:           	  \n\t"     // начало цикла отправки
+			"loop1:           	  \n\t"     // начало цикла отправки   
 			"st X, %[set_hi]      \n\t"     // установить high на пине 
 			"sbrs	%[data], 7    \n\t"   	// если нужно отправить '1' , пропустить след команду 
 			"st	X, %[set_lo] 	  \n\t"   	// сбросить пин в low
@@ -104,7 +106,7 @@ void WS2812B_sendData (PTR_TYPE data, int16_t datlen, uint8_t maskhi, uint8_t *p
 			_DELAY_		                    // основная задержка
 			"st  X,%[set_lo]      \n\t"     // сбросить пин в low
 			"to_end:              \n\t"     // точка куда переходим при пропуске				
-			"brne  loop		      \n\t"     // вернуться в начало цикла
+			"brne  loop1		      \n\t"     // вернуться в начало цикла
 			
 			:	[counter] "=&d" (ctr)
 			:	[data] "r" (*data_ptr++), "x" (port), [set_hi] "r" (maskhi), [set_lo] "r" (masklo)
